@@ -6,3 +6,4 @@ warehouse.db
 logs/
 data/raw/*
 !data/raw/.gitkeep
+.idea/
