@@ -2,7 +2,6 @@
 PY    := .venv/bin/python
 INPUT ?= data/sample
 PORT  ?= 8000
-PORT  ?= 8000
 
 .DEFAULT_GOAL := help
 .PHONY: help setup sample run run-raw reset test check all serve clean

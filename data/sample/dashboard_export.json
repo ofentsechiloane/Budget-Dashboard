@@ -1,0 +1,46 @@
+{
+  "income": 18500,
+  "envelopes": [
+    {
+      "name": "Groceries",
+      "budget": 2200,
+      "color": "#534AB7",
+      "transactions": [
+        {
+          "amount": 312.5,
+          "note": "Weekend shop",
+          "date": "03/09/2026"
+        },
+        {
+          "amount": 148.9,
+          "note": "Top-up",
+          "date": "11/09/2026"
+        }
+      ]
+    },
+    {
+      "name": "Transport",
+      "budget": 1200,
+      "color": "#185FA5",
+      "transactions": [
+        {
+          "amount": 95.0,
+          "note": "Taxi fare",
+          "date": "08/09/2026"
+        }
+      ]
+    },
+    {
+      "name": "Eating Out",
+      "budget": 600,
+      "color": "#378ADD",
+      "transactions": [
+        {
+          "amount": 120.0,
+          "note": "Lunch",
+          "date": "14/09/2026"
+        }
+      ]
+    }
+  ]
+}
