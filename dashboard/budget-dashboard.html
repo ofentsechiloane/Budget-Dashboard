@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Budget Pipeline Dashboard — Ofentse Chiloane</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --purple-deep:#3B32A0; --purple-mid:#534AB7; --purple-light:#7F77DD; --purple-tint:#EEEDFE;
+    --blue-deep:#0C447C; --blue-mid:#185FA5; --blue-light:#378ADD; --blue-tint:#E6F1FB;
+    --gray-text:#374151; --gray-muted:#6B7280; --border:#E8E7F8;
+    --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif;
+    --green:#1a9c6b; --red:#d1454a;
+  }
+  body{font-family:var(--font-body); color:var(--gray-text); background:#f8f8fc; line-height:1.6; padding-bottom:60px;}
+  .back{display:inline-flex; align-items:center; gap:6px; margin:24px 0 0 24px; font-size:14px; color:var(--purple-mid); font-weight:600; text-decoration:none;}
+  .wrap{max-width:920px; margin:0 auto; padding:20px 20px 0;}
+  header{text-align:center; margin:28px 0 32px;}
+  header .eyebrow{color:var(--purple-mid); font-weight:600; font-size:13px; letter-spacing:0.5px; text-transform:uppercase;}
+  header h1{font-family:var(--font-display); font-size:30px; margin-top:8px; color:#1f2430;}
+  header p{color:var(--gray-muted); font-size:14.5px; margin-top:8px;}
+
+  .top-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:18px; margin-bottom:18px;}
+  .card{background:#fff; border:1px solid var(--border); border-radius:16px; padding:22px; box-shadow:0 4px 20px rgba(59,50,160,0.06);}
+  .card h3{font-family:var(--font-display); font-size:16px; margin-bottom:14px;}
+
+  .income-row{display:flex; gap:10px; margin-bottom:16px;}
+  .income-row input{flex:1; padding:11px 13px; border:1.5px solid var(--border); border-radius:9px; font-size:14px; font-family:var(--font-body);}
+  .income-row button{padding:11px 16px; border:none; border-radius:9px; background:var(--purple-mid); color:#fff; font-weight:600; cursor:pointer; font-size:13.5px;}
+
+  .stat-row{display:flex; gap:14px;}
+  .stat{flex:1; background:var(--purple-tint); border-radius:12px; padding:14px; text-align:center;}
+  .stat b{display:block; font-family:var(--font-display); font-size:20px; color:var(--purple-deep);}
+  .stat span{font-size:11.5px; color:var(--gray-muted);}
+  .stat.blue{background:var(--blue-tint);}
+  .stat.blue b{color:var(--blue-deep);}
+
+  .donut-wrap{display:flex; align-items:center; gap:20px;}
+  .donut{width:120px; height:120px; border-radius:50%; flex-shrink:0;}
+  .legend{flex:1; font-size:12.5px;}
+  .legend-item{display:flex; align-items:center; gap:8px; margin-bottom:7px;}
+  .dot{width:10px; height:10px; border-radius:3px; flex-shrink:0;}
+  .legend-item span{color:var(--gray-muted);}
+  .legend-item b{margin-left:auto; color:var(--gray-text);}
+
+  .envelopes{margin-top:18px;}
+  .env-form{display:grid; grid-template-columns:2fr 1fr 1fr auto; gap:10px; margin-bottom:16px;}
+  .env-form input{padding:11px 13px; border:1.5px solid var(--border); border-radius:9px; font-size:13.5px; font-family:var(--font-body);}
+  .env-form button{padding:11px 16px; border:none; border-radius:9px; background:var(--blue-mid); color:#fff; font-weight:600; cursor:pointer; font-size:13px; white-space:nowrap;}
+
+  .envelope{margin-bottom:16px;}
+  .env-head{display:flex; justify-content:space-between; font-size:13.5px; margin-bottom:6px;}
+  .env-head b{color:var(--gray-text);}
+  .env-head .amt{color:var(--gray-muted); font-size:12.5px;}
+  .bar-bg{background:#EEF0F5; border-radius:8px; height:10px; overflow:hidden;}
+  .bar-fill{height:100%; border-radius:8px; background:var(--purple-mid); transition:width .3s;}
+  .bar-fill.over{background:var(--red);}
+  .env-actions{display:flex; gap:8px; margin-top:8px;}
+  .env-actions input{flex:1; padding:8px 10px; border:1.5px solid var(--border); border-radius:8px; font-size:12.5px;}
+  .env-actions button{padding:8px 12px; border:none; border-radius:8px; background:var(--gray-text); color:#fff; font-size:12px; cursor:pointer;}
+  .env-actions .del{background:transparent; color:var(--red); border:1px solid var(--red);}
+
+  .tx-list{margin-top:6px; max-height:220px; overflow-y:auto;}
+  .tx-item{display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px;}
+  .tx-item .meta{color:var(--gray-muted); font-size:11.5px;}
+  .tx-item .amt{font-weight:600; color:var(--red);}
+  .empty{color:var(--gray-muted); font-size:13px; text-align:center; padding:16px 0;}
+  .reset-link{display:block; text-align:center; margin-top:26px; font-size:12.5px; color:var(--gray-muted); cursor:pointer; text-decoration:underline;}
+
+  @media (max-width:760px){
+    .top-grid{grid-template-columns:1fr;}
+    .env-form{grid-template-columns:1fr 1fr;}
+    .env-form button{grid-column:1/-1;}
+  }
+  #monthSelect{margin-top:14px; padding:9px 14px; border:1.5px solid var(--border); border-radius:9px; font:600 14px var(--font-body); color:var(--purple-mid); background:#fff;}
+  .income-row,.env-form,.env-actions,.reset-link{display:none !important;}
+</style>
+</head>
+<body>
+
+<a class="back" href="https://github.com/ofentsechiloane">← GitHub</a>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Data engineering project</div>
+    <h1>Budget Pipeline Dashboard</h1>
+    <p>Read-only view of the pipeline output: bank exports are validated, categorised and loaded into a warehouse, then served here (ZAR).</p>
+    <select id="monthSelect" aria-label="Month"></select>
+  </header>
+
+  <div class="top-grid">
+    <div class="card">
+      <h3>Monthly income</h3>
+      <div class="income-row">
+        <input type="number" id="incomeInput" placeholder="e.g. 18000" min="0">
+        <button onclick="setIncome()">Set</button>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><b id="statIncome">R0</b><span>Income</span></div>
+        <div class="stat blue"><b id="statBudgeted">R0</b><span>Budgeted</span></div>
+        <div class="stat"><b id="statSpent">R0</b><span>Spent</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Spending breakdown</h3>
+      <div class="donut-wrap">
+        <div class="donut" id="donut" style="background:#EEF0F5;"></div>
+        <div class="legend" id="legend"><p class="empty">No spending logged yet.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card envelopes">
+    <h3>Category envelopes</h3>
+    <div class="env-form">
+      <input type="text" id="envName" placeholder="Category (e.g. Groceries)">
+      <input type="number" id="envBudget" placeholder="Budget (R)" min="0">
+      <input type="text" id="envColor" placeholder="#534AB7" value="#534AB7">
+      <button onclick="addEnvelope()">Add envelope</button>
+    </div>
+    <div id="envelopeList"><p class="empty">Add a category to start budgeting.</p></div>
+  </div>
+
+  <div class="reset-link" onclick="resetAll()">Reset demo data</div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'budget-dashboard-demo';
+  let state = { income: 0, envelopes: [] };
+
+  function load(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)); }catch(e){ return null; }
+  }
+  function save(){ /* read-only: data comes from the pipeline */ }
+
+  function setIncome(){
+    const val = parseFloat(document.getElementById('incomeInput').value);
+    if(!isNaN(val) && val >= 0){ state.income = val; save(); render(); }
+  }
+
+  function addEnvelope(){
+    const name = document.getElementById('envName').value.trim();
+    const budget = parseFloat(document.getElementById('envBudget').value);
+    const color = document.getElementById('envColor').value.trim() || '#534AB7';
+    if(!name || isNaN(budget) || budget < 0) return;
+    state.envelopes.push({ id: Date.now(), name, budget, color, transactions: [] });
+    document.getElementById('envName').value = '';
+    document.getElementById('envBudget').value = '';
+    save(); render();
+  }
+
+  function addTransaction(id){
+    const amtInput = document.getElementById('tx-amt-' + id);
+    const noteInput = document.getElementById('tx-note-' + id);
+    const amt = parseFloat(amtInput.value);
+    if(isNaN(amt) || amt <= 0) return;
+    const env = state.envelopes.find(e => e.id === id);
+    env.transactions.push({ amount: amt, note: noteInput.value.trim() || 'Expense', date: new Date().toLocaleDateString('en-ZA') });
+    amtInput.value = ''; noteInput.value = '';
+    save(); render();
+  }
+
+  function deleteEnvelope(id){
+    state.envelopes = state.envelopes.filter(e => e.id !== id);
+    save(); render();
+  }
+
+  function resetAll(){
+    if(!confirm('Clear all demo budget data?')) return;
+    state = { income: 0, envelopes: [] };
+    save(); render();
+  }
+
+  function spentOf(env){ return env.transactions.reduce((s,t)=>s+t.amount,0); }
+
+  function render(){
+    document.getElementById('incomeInput').value = state.income || '';
+    const totalBudgeted = state.envelopes.reduce((s,e)=>s+e.budget,0);
+    const totalSpent = state.envelopes.reduce((s,e)=>s+spentOf(e),0);
+    document.getElementById('statIncome').textContent = 'R' + state.income.toLocaleString('en-ZA');
+    document.getElementById('statBudgeted').textContent = 'R' + totalBudgeted.toLocaleString('en-ZA');
+    document.getElementById('statSpent').textContent = 'R' + totalSpent.toLocaleString('en-ZA');
+
+    // Donut chart
+    const donut = document.getElementById('donut');
+    const legend = document.getElementById('legend');
+    const spendingEnvs = state.envelopes.filter(e => spentOf(e) > 0);
+    if(spendingEnvs.length === 0){
+      donut.style.background = '#EEF0F5';
+      legend.innerHTML = '<p class="empty">No spending logged yet.</p>';
+    } else {
+      let acc = 0;
+      const stops = spendingEnvs.map(e=>{
+        const pct = (spentOf(e) / totalSpent) * 100;
+        const start = acc; acc += pct;
+        return `${e.color} ${start}% ${acc}%`;
+      });
+      donut.style.background = `conic-gradient(${stops.join(',')})`;
+      legend.innerHTML = spendingEnvs.map(e => `
+        <div class="legend-item">
+          <div class="dot" style="background:${e.color};"></div>
+          <span>${e.name}</span>
+          <b>R${spentOf(e).toLocaleString('en-ZA')}</b>
+        </div>
+      `).join('');
+    }
+
+    // Envelopes
+    const list = document.getElementById('envelopeList');
+    if(state.envelopes.length === 0){
+      list.innerHTML = '<p class="empty">Add a category to start budgeting.</p>';
+      return;
+    }
+    list.innerHTML = state.envelopes.map(e=>{
+      const spent = spentOf(e);
+      const pct = e.budget > 0 ? Math.min(100, (spent/e.budget)*100) : 0;
+      const over = spent > e.budget;
+      const txHtml = e.transactions.slice().reverse().slice(0,4).map(t => `
+        <div class="tx-item"><span>${t.note}<div class="meta">${t.date}</div></span><span class="amt">-R${t.amount.toFixed(2)}</span></div>
+      `).join('') || '<p class="empty" style="padding:8px 0;">No transactions yet</p>';
+
+      return `
+        <div class="envelope">
+          <div class="env-head">
+            <b>${e.name}</b>
+            <span class="amt">R${spent.toFixed(2)} / R${e.budget.toFixed(2)} ${over ? '(over budget)' : ''}</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill ${over?'over':''}" style="width:${pct}%; background:${over?'':e.color};"></div></div>
+          <div class="env-actions">
+            <input type="number" id="tx-amt-${e.id}" placeholder="Amount (R)" min="0">
+            <input type="text" id="tx-note-${e.id}" placeholder="Note">
+            <button onclick="addTransaction(${e.id})">Log spend</button>
+            <button class="del" onclick="deleteEnvelope(${e.id})">Delete</button>
+          </div>
+          <div class="tx-list">${txHtml}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  fetch('data/dashboard.json')
+    .then(r => r.json())
+    .then(p => {
+      const sel = document.getElementById('monthSelect');
+      sel.innerHTML = p.months.map(m => `<option value="${m}">${m}</option>`).join('');
+      sel.onchange = () => { state = p.data[sel.value]; render(); };
+      sel.value = p.months[p.months.length - 1];
+      sel.onchange();
+    })
+    .catch(() => {
+      document.getElementById('envelopeList').innerHTML =
+        '<p class="empty">No data yet. Run: python src/run_pipeline.py, then serve this folder over HTTP.</p>';
+    });
+</script>
+</body>
+</html>

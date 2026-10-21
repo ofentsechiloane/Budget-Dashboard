@@ -7,3 +7,4 @@ logs/
 data/raw/*
 !data/raw/.gitkeep
 .idea/
+dashboard/data/
