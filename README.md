@@ -168,8 +168,8 @@ Runs all stages in order, logs counts for rows read, rejected, deduplicated and 
 ## Getting started
 
 ```bash
-git clone https://github.com/<your-username>/budget-pipeline.git
-cd budget-pipeline
+git clone https://github.com/ofentsechiloane/Budget-Dashboard.git
+cd Budget-Dashboard
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 ```
